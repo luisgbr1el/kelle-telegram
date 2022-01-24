@@ -28,7 +28,7 @@ bot.command("baixar", async (ctx) => {
     messageText = ctx.message.text;
     const url = messageText.replace("/baixar ", "");
 
-    ctx.replyWithMarkdown("🔃 Baixando vídeo...").then(({ message_id }) => {
+    ctx.replyWithMarkdown("*🔃 Baixando vídeo...*").then(({ message_id }) => {
       download.tiktok(url).then(async (data) => {
         ctx.deleteMessage(message_id);
         await ctx.scene.enter("example");
@@ -40,7 +40,7 @@ bot.command("baixar", async (ctx) => {
           await ctx.answerCbQuery("Vídeo");
           await ctx.replyWithMarkdown(`✅ *Vídeo baixado com sucesso!*
 
-          *Criador:* @${data.server2.user.username}
+          *Criador:* [${data.server2.user.username}](https://tiktok.com/@${data.server2.user.username}¨/)
           *Legenda:* ${data.server2.caption}
           *Visualizações:* ${data.server2.stats.views}
           *Likes:* ${data.server2.stats.likes}
