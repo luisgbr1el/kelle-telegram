@@ -40,7 +40,7 @@ bot.command("baixar", async (ctx) => {
           await ctx.answerCbQuery("Vídeo");
           await ctx.replyWithMarkdown(`✅ *Vídeo baixado com sucesso!*
 
-          *Criador:* [${data.server2.user.username}](https://tiktok.com/@${data.server2.user.username}¨/)
+          *Criador:* [${data.server2.user.username}](https://tiktok.com/@${data.server2.user.username}/)
           *Legenda:* ${data.server2.caption}
           *Visualizações:* ${data.server2.stats.views}
           *Likes:* ${data.server2.stats.likes}
