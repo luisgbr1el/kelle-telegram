@@ -1,19 +1,30 @@
-const express = require("express");
+/*
+MIT License
+Copyright (c) 2022 Luis Gabriel Araújo
+
+*/
+
+const express = require("express"); // App
+var fs = require("fs"); // File Sync
+var axios = require("axios"); // HTTP Request
+const download = require("@phaticusthiccy/open-apis"); // Tiktok Downloader Module
+
+// Special Functions
+var deleteallcache = require("./deleteallcache");
+var pipetofile = require("./pipetofile");
+
+// App Configs
 const app = express();
 const port = 3000;
-
 app.get("/", (req, res) => res.send("<h1>Hello World!</h1>"));
-
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
 
+// Telegraf Modules
 const { Markup, Scenes, session, Telegraf } = require("telegraf");
 const bot = new Telegraf(YOUR_BOT_TOKEN);
-const download = require("@phaticusthiccy/open-apis");
-
 const scene = new Scenes.BaseScene("example");
-
 const stage = new Scenes.Stage([scene]);
 
 bot.use(session());
@@ -36,7 +47,27 @@ bot.command("baixar", async (ctx) => {
         // console.log(data)
 
         scene.action("video", async (ctx) => {
-          await ctx.replyWithVideo({ url: data.server1.video });
+
+          // If Video In Cache, Send Quickly
+          function file_exist(file_name) {
+            return fs.promises.accsess(file_name, fs.constants.F_OK).then(() => true).catch(()=> false)
+          }
+          var check_file = file_exist("./src/" + data.server1.video)
+          if (file_exist) {
+            await ctx.replyWithVideo(
+              { 
+                source: fs.createReadStream('./src/' + data.server1.video) 
+              }
+            )
+          } else { 
+            await pipetofile(data.server1.video, data.server1.video)
+            await ctx.replyWithVideo(
+              { 
+                source: fs.createReadStream('./src/' + data.server1.video) 
+              }
+            )
+          }
+
           await ctx.answerCbQuery("Vídeo");
           await ctx.replyWithMarkdown(`✅ *Vídeo baixado com sucesso!*
 
@@ -48,7 +79,15 @@ bot.command("baixar", async (ctx) => {
         });
 
         scene.action("audio", async (ctx) => {
-          await ctx.replyWithVoice({ url: data.server1.music });
+
+          // Use ArrayBuffer to Define Audio (Try .alloc() & .from() )
+          var mp3buffer = await axios.get(data.server1.music, { responseType: "arraybuffer"})
+          try {
+            await ctx.replyWithVoice({ source: Buffer.from(mp3buffer.data) });
+          } catch {
+            await ctx.replyWithVoice({ source: Buffer.alloc(mp3buffer.data) });
+          }
+          
           await ctx.answerCbQuery("Apenas áudio");
           await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*
 
@@ -57,7 +96,6 @@ bot.command("baixar", async (ctx) => {
         });
       });
     });
-    // // Outside of Async Function
 
     scene.enter(
       async (ctx) =>
@@ -81,6 +119,20 @@ bot.command("baixar", async (ctx) => {
       "*❌ Você precisa digitar o link junto do comando.* \n\n*Exemplo:*\n`/baixar https://vm.tiktok.com/TESTE3Kmdl`"
     );
   }
+
+  // If Local Cache Files More Than 10, Delete All (Clear Cache)
+  var cachefilescount;
+  try {
+    fs.readdir("./src", (e, f) => {
+      cachefilescount = Number(f.length)
+    })
+  } catch {
+    cachefilescount = 0;
+  }
+  if (cachefilescount > 10) {
+    await deleteallcache("./src")
+  }
+
 });
 
 bot.start((ctx) =>
