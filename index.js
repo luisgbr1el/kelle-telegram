@@ -52,18 +52,18 @@ bot.command("baixar", async (ctx) => {
           function file_exist(file_name) {
             return fs.promises.accsess(file_name, fs.constants.F_OK).then(() => true).catch(()=> false)
           }
-          var check_file = file_exist("./src/" + data.server1.video)
+          var check_file = file_exist("./src/" + data.server1.video.split("org-")[1])
           if (file_exist) {
             await ctx.replyWithVideo(
               { 
-                source: fs.createReadStream('./src/' + data.server1.video) 
+                source: fs.createReadStream('./src/' + data.server1.video.split("org-")[1]) 
               }
             )
           } else { 
-            await pipetofile(data.server1.video, data.server1.video)
+            await pipetofile(data.server1.video, data.server1.video.split("org-")[1])
             await ctx.replyWithVideo(
               { 
-                source: fs.createReadStream('./src/' + data.server1.video) 
+                source: fs.createReadStream('./src/' + data.server1.video.split("org-")[1]) 
               }
             )
           }
