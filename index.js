@@ -30,7 +30,7 @@ const stage = new Scenes.Stage([scene]);
 bot.use(session());
 bot.use(stage.middleware());
 
-bot.command("baixar", async (ctx) => {
+bot.command("baixar", async (ctx) => { // EventEmitter <bot extends keyof Telegraf>
   if (
     ctx.message.text.includes("https://vm.tiktok.com/") ||
     ctx.message.text.includes("https://www.tiktok.com/@") ||
@@ -49,21 +49,29 @@ bot.command("baixar", async (ctx) => {
         scene.action("video", async (ctx) => {
 
           // If Video In Cache, Send Quickly
-          function file_exist(file_name) {
-            return fs.promises.accsess(file_name, fs.constants.F_OK).then(() => true).catch(()=> false)
+          async function file_exist(file_name) {
+            var data_if;
+            try {
+              if (fs.existsSync(file_name)) {
+                data_if = true
+              }
+            } catch {
+              data_if = false
+            }
+            return data_if;
           }
-          var check_file = file_exist("./src/" + data.server1.video.split("org-")[1])
-          if (file_exist) {
+          var check_file = await file_exist(`./src/${data.server1.video.split("org-")[1]}`)
+          if (check_file) {
             await ctx.replyWithVideo(
               { 
-                source: fs.createReadStream('./src/' + data.server1.video.split("org-")[1]) 
+                source: './src/' + data.server1.video.split("org-")[1] 
               }
             )
           } else { 
             await pipetofile(data.server1.video, data.server1.video.split("org-")[1])
             await ctx.replyWithVideo(
               { 
-                source: fs.createReadStream('./src/' + data.server1.video.split("org-")[1]) 
+                source: './src/' + data.server1.video.split("org-")[1]
               }
             )
           }
@@ -75,6 +83,7 @@ bot.command("baixar", async (ctx) => {
           *Legenda:* ${data.server2.caption}
           *Visualizações:* ${data.server2.stats.views}
           *Likes:* ${data.server2.stats.likes}
+          *Popularidade:* ${data.server2.stats.popularity}
           *Data de publicação:* ${data.server2.created_at}`);
         });
 
