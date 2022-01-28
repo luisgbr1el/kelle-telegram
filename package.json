@@ -1,17 +1,21 @@
 {
   "name": "kelle-telegram",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Um simples Bot do Telegram/Discord",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ."
   },
+  "directories": {
+    "src": "src"
+  },
   "author": "luisgbr1el",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@phaticusthiccy/open-apis": "^1.2.1",
     "express": "^4.17.1",
+    "path": "^0.12.7",
     "telegraf": "^4.6.0",
     "telegraf-command-parts": "^1.0.3"
   }

@@ -1,25 +1,36 @@
-const express = require("express");
+/*
+MIT License
+Copyright (c) 2022 Luis Gabriel Araújo
+
+*/
+
+const express = require("express"); // App
+var fs = require("fs"); // File Sync
+var axios = require("axios"); // HTTP Request
+const download = require("@phaticusthiccy/open-apis"); // Tiktok Downloader Module
+
+// Special Functions
+var deleteallcache = require("./deleteallcache");
+var pipetofile = require("./pipetofile");
+
+// App Configs
 const app = express();
 const port = 3000;
-
 app.get("/", (req, res) => res.send("<h1>Hello World!</h1>"));
-
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
 );
 
+// Telegraf Modules
 const { Markup, Scenes, session, Telegraf } = require("telegraf");
 const bot = new Telegraf(YOUR_BOT_TOKEN);
-const download = require("@phaticusthiccy/open-apis");
-
 const scene = new Scenes.BaseScene("example");
-
 const stage = new Scenes.Stage([scene]);
 
 bot.use(session());
 bot.use(stage.middleware());
 
-bot.command("baixar", async (ctx) => {
+bot.command("baixar", async (ctx) => { // EventEmitter <bot extends keyof Telegraf>
   if (
     ctx.message.text.includes("https://vm.tiktok.com/") ||
     ctx.message.text.includes("https://www.tiktok.com/@") ||
@@ -36,7 +47,35 @@ bot.command("baixar", async (ctx) => {
         // console.log(data)
 
         scene.action("video", async (ctx) => {
-          await ctx.replyWithVideo({ url: data.server1.video });
+
+          // If Video In Cache, Send Quickly
+          async function file_exist(file_name) {
+            var data_if == false;
+            if (fs.existsSync(file_name) == true) {
+              data_if = true           
+            } else {
+              data_if = false
+            }
+            return data_if;
+          }
+          var video_cache_name = data.server2.url.split('.com/')[1].split('/')[0] + data.server2.video_id
+          var check_file = await file_exist("./src/" + video_cache_name + ".mp4")
+          if (check_file) {
+            await ctx.replyWithVideo(
+              { 
+                source: './src/' + video_cache_name + ".mp4"
+              }
+            )
+          } else { 
+            await pipetofile(data.server1.video, video_cache_name + ".mp4").then(async () => {
+              await ctx.replyWithVideo(
+                { 
+                  source: './src/' + video_cache_name + ".mp4"
+                }
+              )
+            })
+          }
+
           await ctx.answerCbQuery("Vídeo");
           await ctx.replyWithMarkdown(`✅ *Vídeo baixado com sucesso!*
 
@@ -44,11 +83,20 @@ bot.command("baixar", async (ctx) => {
           *Legenda:* ${data.server2.caption}
           *Visualizações:* ${data.server2.stats.views}
           *Likes:* ${data.server2.stats.likes}
+          *Popularidade:* ${data.server2.stats.popularity}
           *Data de publicação:* ${data.server2.created_at}`);
         });
 
         scene.action("audio", async (ctx) => {
-          await ctx.replyWithVoice({ url: data.server1.music });
+
+          // Use ArrayBuffer to Define Audio (Try .alloc() & .from() )
+          var mp3buffer = await axios.get(data.server1.music, { responseType: "arraybuffer"})
+          try {
+            await ctx.replyWithVoice({ source: Buffer.from(mp3buffer.data) });
+          } catch {
+            await ctx.replyWithVoice({ source: Buffer.alloc(mp3buffer.data) });
+          }
+          
           await ctx.answerCbQuery("Apenas áudio");
           await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*
 
@@ -57,7 +105,6 @@ bot.command("baixar", async (ctx) => {
         });
       });
     });
-    // // Outside of Async Function
 
     scene.enter(
       async (ctx) =>
@@ -81,6 +128,20 @@ bot.command("baixar", async (ctx) => {
       "*❌ Você precisa digitar o link junto do comando.* \n\n*Exemplo:*\n`/baixar https://vm.tiktok.com/TESTE3Kmdl`"
     );
   }
+
+  // If Local Cache Files More Than 10, Delete All (Clear Cache)
+  var cachefilescount;
+  try {
+    fs.readdir("./src", (e, f) => {
+      cachefilescount = Number(f.length)
+    })
+  } catch {
+    cachefilescount = 0;
+  }
+  if (cachefilescount > 10) {
+    await deleteallcache("./src")
+  }
+
 });
 
 bot.start((ctx) =>
