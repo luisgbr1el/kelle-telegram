@@ -164,7 +164,7 @@ bot.help((ctx) => {
 Fui desenvolvida por @luisgbr1el e @juniodevs. 🇧🇷
 Fui desenhada por [Gakkou](https://www.instagram.com/gakkou03).
   
-*Versão 1.0.0*`
+*Versão 1.1.0*`
   );
 });
 
