@@ -50,7 +50,7 @@ bot.command("baixar", async (ctx) => { // EventEmitter <bot extends keyof Telegr
 
           // If Video In Cache, Send Quickly
           async function file_exist(file_name) {
-            var data_if = false;
+            var data_if == false;
             try {
               if (fs.existsSync(file_name)) {
                 data_if = true
