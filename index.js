@@ -50,7 +50,7 @@ bot.command("baixar", async (ctx) => { // EventEmitter <bot extends keyof Telegr
 
           // If Video In Cache, Send Quickly
           async function file_exist(file_name) {
-            var data_if;
+            var data_if = false;
             try {
               if (fs.existsSync(file_name)) {
                 data_if = true
@@ -60,20 +60,22 @@ bot.command("baixar", async (ctx) => { // EventEmitter <bot extends keyof Telegr
             }
             return data_if;
           }
-          var check_file = await file_exist(`./src/${data.server1.video.split("org-")[1]}`)
+          var video_cache_name = data.server2.url.split('.com/')[1].split('/')[0] + data.server2.video_id
+          var check_file = await file_exist("./src/" + video_cache_name + ".mp4")
           if (check_file) {
             await ctx.replyWithVideo(
               { 
-                source: './src/' + data.server1.video.split("org-")[1] 
+                source: './src/' + video_cache_name + ".mp4"
               }
             )
           } else { 
-            await pipetofile(data.server1.video, data.server1.video.split("org-")[1])
-            await ctx.replyWithVideo(
-              { 
-                source: './src/' + data.server1.video.split("org-")[1]
-              }
-            )
+            await pipetofile(data.server1.video, video_cache_name + ".mp4").then(async () => {
+              await ctx.replyWithVideo(
+                { 
+                  source: './src/' + video_cache_name + ".mp4"
+                }
+              )
+            })
           }
 
           await ctx.answerCbQuery("Vídeo");
