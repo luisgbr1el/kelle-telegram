@@ -23,7 +23,7 @@ app.listen(port, () =>
 
 // Telegraf Modules
 const { Markup, Scenes, session, Telegraf } = require("telegraf");
-const bot = new Telegraf(YOUR_BOT_TOKEN);
+const bot = new Telegraf("YOUR_BOT_TOKEN");
 const scene = new Scenes.BaseScene("example");
 const stage = new Scenes.Stage([scene]);
 
