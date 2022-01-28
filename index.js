@@ -10,8 +10,8 @@ var axios = require("axios"); // HTTP Request
 const download = require("@phaticusthiccy/open-apis"); // Tiktok Downloader Module
 
 // Special Functions
-var deleteallcache = require("./deleteallcache");
-var pipetofile = require("./pipetofile");
+var deleteallcache = require("./functions/deleteallcache");
+var pipetofile = require("./functions/pipetofile");
 
 // App Configs
 const app = express();
