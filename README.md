@@ -47,5 +47,6 @@ node index.js
 # Contribua
 Você pode contribuir com o repositório solicitando um **Pull Request**.
 
-# Autor
+# Autores
 - [luisgbr1el](https://github.com/luisgbr1el)
+- [juniodevs](https://github.com/juniodevs)
