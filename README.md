@@ -6,7 +6,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/luisgbr1el/kelle-telegram?style=flat-square)](https://github.com/luisgbr1el/kelle-telegram/stargazers)
 [![GitHub license](https://img.shields.io/github/license/luisgbr1el/kelle-telegram?style=flat-square)](https://github.com/luisgbr1el/kelle-telegram/blob/main/LICENSE)
 
-Um simples bot para o **Telegram** que baixa vídeos e áudios do TikTok & outras funcionalidades.
+Um simples bot para o **Telegram** que baixa vídeos e áudios do TikTok, clipes da Twitch & outras funcionalidades.
 
 [Clique aqui](https://t.me/KelleEstellaBot) para utilizá-lo.
 
