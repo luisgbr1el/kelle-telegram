@@ -34,9 +34,9 @@ Para que o bot seja iniciado, você precisa inserir seu *token* no código.
 
 Depois de copiar seu *token*, vá até essa linha do código em `index.js`:
 ```
-const bot = new Telegraf(YOUR_BOT_TOKEN);
+const token = process.env['token'];
 ```
-E substitua `YOUR_BOT_TOKEN` pelo seu *token*, entre aspas. Afinal, é uma *String*.
+E substitua `process.env['token']` pelo seu *token*, entre aspas. Afinal, é uma *String*.
 
 ### 4. Rodar o bot
 Finalmente, vá até o **console** e digite:
