@@ -5,10 +5,13 @@ Copyright (c) 2022 Luis Gabriel Araújo
 */
 
 const express = require("express"); // App
+const { NewTwitchAPI, V5TwitchAPI } = require("twitch-getter");
 var fs = require("fs"); // File Sync
 var axios = require("axios"); // HTTP Request
 const download = require("@phaticusthiccy/open-apis"); // Tiktok Downloader Module
 const cliprxyz = require("cliprxyz"); // Twitch Downloader Module
+const youtubeThumbnail = require("youtube-thumbnail-downloader-hd"); // YouTube Thumbnail Downloader Module
+let {parseUrl, getDetailsConcise} = require("twitter-url");  // Twitter Video Downloader Module
 
 // Special Functions
 var deleteallcache = require("./functions/deleteallcache");
@@ -24,7 +27,8 @@ app.listen(port, () =>
 
 // Telegraf Modules
 const { Markup, Scenes, session, Telegraf } = require("telegraf");
-const bot = new Telegraf("YOUR_BOT_TOKEN");
+const token = process.env['token'];
+const bot = new Telegraf(token);
 const scene = new Scenes.BaseScene("example");
 const stage = new Scenes.Stage([scene]);
 
@@ -60,23 +64,22 @@ bot.command("tiktok", async (ctx) => {
             return data_if;
           }
           var video_cache_name =
-            data.server2.url.split(".com/")[1].split("/")[0] +
-            data.server2.video_id;
+            data.server1.video.split(".org-")[1];
           var check_file = await file_exist(
-            "./src/" + video_cache_name + ".mp4"
+            "./src/" + video_cache_name
           );
           if (check_file) {
             await ctx.replyWithVideo({
-              source: "./src/" + video_cache_name + ".mp4",
+              source: "./src/" + video_cache_name,
             });
           } else {
             await pipetofile(
               data.server1.video,
-              video_cache_name + ".mp4"
+              video_cache_name
             ).then(async () => {
               await ctx.replyWithVideo(
                 {
-                  source: "./src/" + video_cache_name + ".mp4",
+                  source: "./src/" + video_cache_name,
                 },
                 {
                   caption: "✅ Vídeo baixado com sucesso!",
@@ -85,13 +88,7 @@ bot.command("tiktok", async (ctx) => {
             });
           }
 
-          await ctx.answerCbQuery("Vídeo");
-          await ctx.replyWithMarkdown(`*Criador:* [${data.server2.user.username}](https://tiktok.com/@${data.server2.user.username}/)
-*Legenda:* ${data.server2.caption}
-*Visualizações:* ${data.server2.stats.views}
-*Likes:* ${data.server2.stats.likes}
-*Popularidade:* ${data.server2.stats.popularity}
-*Data de publicação:* ${data.server2.created_at}`);
+          await ctx.answerCbQuery("Baixando vídeo");
         });
 
         scene.action("audio", async (ctx) => {
@@ -105,11 +102,8 @@ bot.command("tiktok", async (ctx) => {
             await ctx.replyWithVoice({ source: Buffer.alloc(mp3buffer.data) });
           }
 
-          await ctx.answerCbQuery("Apenas áudio");
-          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*
-
-*Título:* ${data.server2.music.title}
-*Autor:* ${data.server2.music.author}`);
+          await ctx.answerCbQuery("Baixando áudio");
+          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*`);
         });
       });
     });
@@ -153,20 +147,30 @@ bot.command("tiktok", async (ctx) => {
 
 bot.start((ctx) =>
   ctx.replyWithMarkdown(
-    `Olá, sou Kelle. Eu posso baixar vídeos do *TikTok*, clipes da *Twitch*, etc. \nDigite */help* e veja informações sobre mim. 😄`
+    `Olá, sou Kelle. Eu posso baixar vídeos do *TikTok* e do *Twitter*, clipes da *Twitch* e thumbnails do *YouTube*. \nDigite */help* e veja informações sobre mim. 😄`
   )
 );
 
 bot.help((ctx) => {
   ctx.replyWithMarkdown(
     `*📃 Os comandos disponíveis são:*
-*/help* - Ver os comandos e informações sobre mim.
+
+*Utilidades*
 */tiktok* ` +
       "`<linkDoVídeo>`" +
       ` - Baixar um vídeo do *TikTok*.
+*/twitter* ` +
+      "`<linkDoVídeo>`" +
+      ` - Baixar um vídeo do *Twitter*.
 */twitch* ` +
       "`<linkDoClipe>`" +
       ` - Baixar um clipe da *Twitch*.
+*/thumbyt* ` +
+      "`<linkDoVídeo>`" +
+      ` - Baixar a thumbnail de um vídeo do *YouTube*.
+
+*Nativos*
+*/help* - Ver os comandos e informações sobre mim.
 */social* - Ver todas as minhas mídias sociais.
 
 *OBS:* Se eu não responder na hora, tente novamente minutos depois.
@@ -174,7 +178,7 @@ bot.help((ctx) => {
 Fui desenvolvida por @luisgbr1el e @juniodevs. 🇧🇷
 Fui desenhada por [Gakkou](https://www.instagram.com/gakkou03).
   
-*Versão 1.2.0*`
+*Versão 1.2.1-beta*`
   );
 });
 
@@ -216,8 +220,76 @@ bot.command("twitch", async (ctx) => {
   }
 });
 
+bot.command("thumbyt", async (ctx) => {
+  if (ctx.message.text.includes("https://www.youtube.com/watch") || ctx.message.text.includes("https://youtu.be/") || ctx.message.text.includes("https://m.youtube.com/watch")) {
+    messageText = ctx.message.text;
+    const url = messageText.replace("/thumbyt ", "");
+    
+    ctx.replyWithMarkdown("*🔃 Baixando thumbnail...*").then(({ message_id }) => {
+      var thumbnail = youtubeThumbnail(url).highMaxRes.url;
+        ctx.deleteMessage(message_id);
+        ctx.replyWithPhoto(
+            { url: thumbnail },
+            { caption: `✅ Thumbnail baixada na melhor resolução!` })
+    });
+  } else {
+    return ctx.replyWithMarkdown(
+      "*❌ Você precisa digitar o link do vídeo junto do comando.* \n\n*Exemplo:*\n`/thumbyt https://www.youtube.com/watch?v=TESTE2MK31`"
+    );
+  }
+});
+
+bot.command("twitter", async (ctx) => {
+  if (ctx.message.text.includes("https://www.twitter.com/") || ctx.message.text.includes("https://mobile.twitter.com/") || ctx.message.text.includes("https://twitter.com/")) {
+    messageText = ctx.message.text;
+    const url = messageText.replace("/twitter ", "");
+  
+    ctx.replyWithMarkdown("*🔃 Baixando vídeo do Twitter...*").then(async ({ message_id }) => {
+      
+      let {id} = parseUrl(url);
+      let details = getDetailsConcise(id)
+      
+      
+      if (details.videos.aspect_ratio) {
+
+        var tweetTitle = `${(details.title)}`;
+        var lastIndex = tweetTitle.lastIndexOf(" ");
+
+        tweetTitle = tweetTitle.substring(0, lastIndex);
+  
+        tweetTitle.replace(/[\W]*\S+[\W]*$/, '');
+          ctx.deleteMessage(message_id);
+          ctx.replyWithVideo(
+            { url: details.highest_video_url },
+            { caption: `✅ Vídeo baixado com sucesso!` }).then(() => {
+              ctx.replyWithMarkdown("*Nome do usuário:* " + details.user_name + "\n*Texto do tweet:*\n`" + tweetTitle + "`")
+            })
+      } else {
+        ctx.deleteMessage(message_id);
+        ctx.replyWithMarkdown(`*❌ Não foi encontrado nenhum vídeo nesse tweet!*`)
+      }
+      
+
+    });
+  } else {
+    return ctx.replyWithMarkdown(
+      "*❌ Você precisa digitar o link do vídeo junto do comando.* \n\n*Exemplo:*\n`/twitter https://twitter.com/user/status/TESTE2MK31`"
+    );
+  }
+});
+
 bot.launch();
 
 if (bot.launch) {
   console.log("Bot online!");
 }
+
+    (async() => {
+    // twitchAPI NEEDS your twitch's clientID in order to work
+    const newTwitchApi = new NewTwitchAPI("gggp64kkmus0x3ao4w26tw275yqn88")
+ 
+    const response = await newTwitchApi.GetNewStreams({
+      language: "en"
+    });
+    // Do something with the response
+    })()
