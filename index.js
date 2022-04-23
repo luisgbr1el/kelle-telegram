@@ -103,7 +103,7 @@ bot.command("tiktok", async (ctx) => {
           }
 
           await ctx.answerCbQuery("Baixando áudio");
-          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*`);
+          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*\n\n[Clique aqui](${data.server1.music}) para baixar.`);
         });
       });
     });
