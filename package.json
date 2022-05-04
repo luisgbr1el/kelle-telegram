@@ -15,7 +15,7 @@
   "dependencies": {
     "@phaticusthiccy/open-apis": "^1.8.3",
     "axios": "^0.25.0",
-    "cliprxyz": "^1.0.4",
+    "cliprxyz": "^1.0.5",
     "express": "^4.17.3",
     "path": "^0.12.7",
     "telegraf": "^4.7.0",

@@ -209,7 +209,7 @@ bot.command("twitch", async (ctx) => {
             ctx.replyWithMarkdown(`*Título:* ${res.clipName}
 *Criador:* [${res.creatorUsername}](${res.creatorUrl})
 *Jogando:* ${res.creatorWasPlaying}
-*Clipe criado dia:*${res.clippedOn}`);
+*Clipe criado dia:* ${res.clippedOn}`);
           });
       });
     });
@@ -249,7 +249,6 @@ bot.command("twitter", async (ctx) => {
       let {id} = parseUrl(url);
       let details = getDetailsConcise(id)
       
-      
       if (details.videos.aspect_ratio) {
 
         var tweetTitle = `${(details.title)}`;
@@ -262,7 +261,7 @@ bot.command("twitter", async (ctx) => {
           ctx.replyWithVideo(
             { url: details.highest_video_url },
             { caption: `✅ Vídeo baixado com sucesso!` }).then(() => {
-              ctx.replyWithMarkdown("*Nome do usuário:* " + details.user_name + "\n*Texto do tweet:*\n`" + tweetTitle + "`")
+              ctx.replyWithMarkdown("*Nome do usuário:* " + details.user_name + "\n*Texto do tweet:* " + tweetTitle + "")
             })
       } else {
         ctx.deleteMessage(message_id);
