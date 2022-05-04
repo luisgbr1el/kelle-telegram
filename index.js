@@ -282,13 +282,3 @@ bot.launch();
 if (bot.launch) {
   console.log("Bot online!");
 }
-
-    (async() => {
-    // twitchAPI NEEDS your twitch's clientID in order to work
-    const newTwitchApi = new NewTwitchAPI("gggp64kkmus0x3ao4w26tw275yqn88")
- 
-    const response = await newTwitchApi.GetNewStreams({
-      language: "en"
-    });
-    // Do something with the response
-    })()
