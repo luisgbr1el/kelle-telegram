@@ -10,8 +10,6 @@ Um simples bot para o **Telegram** que baixa vídeos e áudios do TikTok, clipes
 
 [Clique aqui](https://t.me/KelleEstellaBot) para utilizá-lo.
 
-<img src="https://cdn.worldvectorlogo.com/logos/telegram-1.svg" width="50px">
-
 ## Comandos
 |Comando|Utilização|Descrição|Tipo|
 |--|--|--|--|
@@ -58,5 +56,9 @@ node index.js
 Você pode contribuir com o repositório solicitando um **Pull Request**.
 
 # Autores
-- [luisgbr1el](https://github.com/luisgbr1el)
-- [juniodevs](https://github.com/juniodevs)
+- luisgbr1el
+    - [GitHub](https://github.com/luisgbr1el)
+    - [Twitter](https://twitter.com/luisgbr1el)
+- juniodevs
+    - [GitHub](https://github.com/juniodevs)
+    - [Twitter](https://twitter.com/juniodevs)
