@@ -50,7 +50,6 @@ bot.command("tiktok", async (ctx) => {
         ctx.deleteMessage(message_id);
         await ctx.scene.enter("example");
 
-        // console.log(data)
 
         scene.action("video", async (ctx) => {
           // If Video In Cache, Send Quickly
@@ -85,6 +84,9 @@ bot.command("tiktok", async (ctx) => {
                   caption: "✅ Vídeo baixado com sucesso!",
                 }
               );
+            })
+            .then(({ message_id }) => {
+            ctx.deleteMessage(message_id);
             });
           }
 
@@ -93,6 +95,7 @@ bot.command("tiktok", async (ctx) => {
 
         scene.action("audio", async (ctx) => {
           // Use ArrayBuffer to Define Audio (Try .alloc() & .from() )
+          console.log(data);
           var mp3buffer = await axios.get(data.server1.music, {
             responseType: "arraybuffer",
           });
@@ -103,7 +106,10 @@ bot.command("tiktok", async (ctx) => {
           }
 
           await ctx.answerCbQuery("Baixando áudio");
-          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*\n\n[Clique aqui](${data.server1.music}) para baixar.`);
+          await ctx.replyWithMarkdown(`*✅ Áudio baixado com sucesso!*\n\n[Clique aqui](${data.server1.music}) para baixar.`)
+          .then(({ message_id }) => {
+            ctx.deleteMessage(message_id);
+          });
         });
       });
     });
@@ -120,10 +126,7 @@ bot.command("tiktok", async (ctx) => {
 
             //ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id)
           )
-          .then(({ message_id }) => {
-            setTimeout(() => ctx.deleteMessage(message_id), 60 * 1000);
-            // console.log(message_id)
-          })
+          
     );
   } else {
     return ctx.replyWithMarkdown(

@@ -13,8 +13,8 @@
   "author": "luisgbr1el",
   "license": "MIT",
   "dependencies": {
-    "@phaticusthiccy/open-apis": "^1.8.3",
-    "axios": "^0.25.0",
+    "@phaticusthiccy/open-apis": "^1.8.4",
+    "axios": "^0.27.2",
     "cliprxyz": "^1.0.5",
     "express": "^4.17.3",
     "path": "^0.12.7",
